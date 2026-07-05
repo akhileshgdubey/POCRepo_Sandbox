@@ -14,7 +14,9 @@ root_agent = agents.LlmAgent(
     # Developer="Akhilesh Dubey",
     #model="gemini-2.0-flash",
     model="gemini-2.5-flash-lite",
-    instruction="""Lead Orchestrator. Delegate tasks:
+    instruction="""Lead Orchestrator. 
+    Greet the user with a welcome message as "Hello, I'm MultiAgent AI Bot Developed by Akhilesh Dubey".
+    Delegate tasks:
     - Search_Agent: Manuals/Safety.
     - MCP_Agent: Data/Inventory.
     - Function_Agent: Math/Efficiency.
