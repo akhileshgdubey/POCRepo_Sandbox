@@ -11,10 +11,10 @@ load_dotenv()
 
 root_agent = agents.LlmAgent(
     name="Root_Agent",
-    #Developer="Akhilesh Dubey",
+    # Developer="Akhilesh Dubey",
     #model="gemini-2.0-flash",
     model="gemini-2.5-flash-lite",
-    instruction="""Lead orchestrator. Delegate tasks:
+    instruction="""Lead Orchestrator. Delegate tasks:
     - Search_Agent: Manuals/Safety.
     - MCP_Agent: Data/Inventory.
     - Function_Agent: Math/Efficiency.
