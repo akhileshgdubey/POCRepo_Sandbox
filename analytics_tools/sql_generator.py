@@ -1,13 +1,8 @@
 from google import genai
 from dotenv import load_dotenv
 import os
-load_dotenv()
 
-# client = genai.Client(
-#     vertexai=True,
-#     project="gen-lang-client-0975221347",
-#     location="us-central1"
-# )
+load_dotenv()
 
 client = genai.Client(
     api_key=os.getenv("GOOGLE_API_KEY")
@@ -20,59 +15,103 @@ DATASET = "business_demo"
 def generate_sql(user_question: str, business_context: str):
 
     prompt = f"""
-You are a BigQuery SQL expert.
+You are an expert BigQuery SQL Engineer.
 
-Generate ONLY valid BigQuery SQL.
+Generate ONLY executable BigQuery SQL.
+
+====================================================
+PROJECT
+====================================================
+
+Project ID:
+{PROJECT_ID}
 
 Dataset:
-`{PROJECT_ID}.{DATASET}`
+{DATASET}
 
-Tables:
+====================================================
+DATABASE SCHEMA
+====================================================
 
-customers(
-customer_id,
-customer_name,
-city,
-region_id,
-customer_segment,
-signup_date
-)
+Table:
+`{PROJECT_ID}.{DATASET}.customers`
 
-products(
-product_id,
-product_name,
-category
-)
+Columns:
+- customer_id
+- customer_name
+- city
+- region_id
+- customer_segment
+- signup_date
 
-regions(
-region_id,
-region_name
-)
 
-sales_transactions(
-transaction_id,
-customer_id,
-product_id,
-quantity,
-revenue,
-transaction_date
-)
+Table:
+`{PROJECT_ID}.{DATASET}.products`
 
-Business Context:
+Columns:
+- product_id
+- product_name
+- category
+
+
+Table:
+`{PROJECT_ID}.{DATASET}.regions`
+
+Columns:
+- region_id
+- region_name
+
+
+Table:
+`{PROJECT_ID}.{DATASET}.sales_transactions`
+
+Columns:
+- transaction_id
+- customer_id
+- product_id
+- quantity
+- revenue
+- transaction_date
+
+====================================================
+BUSINESS CONTEXT
+====================================================
+
 {business_context}
 
-User Question:
+====================================================
+USER QUESTION
+====================================================
+
 {user_question}
 
-Rules:
-- Return ONLY SQL.
-- No markdown.
-- No explanation.
-- Use fully-qualified table names.
-"""
+====================================================
+RULES
+====================================================
 
-    #print("\n========== SQL PROMPT ==========")
-    #print(prompt)
+1. Return ONLY SQL.
+2. No markdown.
+3. No explanation.
+4. Always generate Standard SQL.
+5. ALWAYS use FULLY QUALIFIED BigQuery table names.
+6. Never use table names without project and dataset.
+
+Correct:
+
+FROM `{PROJECT_ID}.{DATASET}.sales_transactions`
+
+Wrong:
+
+FROM sales_transactions
+
+Correct:
+
+JOIN `{PROJECT_ID}.{DATASET}.customers`
+
+Wrong:
+
+JOIN customers
+"""
 
     response = client.models.generate_content(
         model="gemini-2.5-flash-lite",
@@ -80,6 +119,39 @@ Rules:
     )
 
     sql = response.text.strip()
+
+    # -----------------------------------------
+    # Auto-fix table names if Gemini forgets
+    # -----------------------------------------
+
+    TABLES = [
+        "customers",
+        "products",
+        "regions",
+        "sales_transactions"
+    ]
+
+    for table in TABLES:
+
+        sql = sql.replace(
+            f"FROM {table}",
+            f"FROM `{PROJECT_ID}.{DATASET}.{table}`"
+        )
+
+        sql = sql.replace(
+            f"JOIN {table}",
+            f"JOIN `{PROJECT_ID}.{DATASET}.{table}`"
+        )
+
+        sql = sql.replace(
+            f"from {table}",
+            f"FROM `{PROJECT_ID}.{DATASET}.{table}`"
+        )
+
+        sql = sql.replace(
+            f"join {table}",
+            f"JOIN `{PROJECT_ID}.{DATASET}.{table}`"
+        )
 
     print("\n========== GENERATED SQL ==========")
     print(sql)

@@ -187,6 +187,15 @@
       "metric": "SUM(transaction_amount)",
       "table": "sales_transactions",
       "group_by": "transaction_date"
-    }
+    },
+  "transaction date": {
+    "definition": "Date on which a customer transaction occurred",
+    "metric": "transaction_date",
+    "tables": [
+      "sales_transactions"
+    ],
+    "column": "transaction_date",
+    "filter": "customer_id"
+  }
   }
 }
