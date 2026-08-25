@@ -7,6 +7,7 @@ from agent_mcp import mcp_agent
 from agent_func import func_agent
 from agent_a2a import a2a_agent
 from agent_bi import business_insight_agent
+from weather_agent import weather_agent
 
 load_dotenv()
 
@@ -74,12 +75,16 @@ root_agent = agents.LlmAgent(
     - dashboards
     - business insights
     - database queries
+    6. Weather_Agent
+    - Current weather information
+    - Weather forecasts
+    - Location-based weather updates
 
     Never send business analytics or SQL-related questions to MCP_Agent.
 
     If a question requires querying business data, always transfer to Business_Insight_Agent.
     """,
-    sub_agents=[search_agent, mcp_agent, func_agent, a2a_agent, business_insight_agent]
+    sub_agents=[search_agent, mcp_agent, func_agent, a2a_agent, business_insight_agent, weather_agent]
 )
 
 if __name__ == "__main__":
