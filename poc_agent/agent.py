@@ -7,7 +7,7 @@ from agent_mcp import mcp_agent
 from agent_func import func_agent
 from agent_a2a import a2a_agent
 from agent_bi import business_insight_agent
-from weather_agent import weather_agent
+from agent_weather import weather_agent
 
 load_dotenv()
 
